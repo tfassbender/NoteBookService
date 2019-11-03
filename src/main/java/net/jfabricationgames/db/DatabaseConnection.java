@@ -29,7 +29,8 @@ public class DatabaseConnection {
 	 * </ul>
 	 */
 	public static final String URL = "jdbc:mysql://mysql?useSSL=false";
-	public static final String USER = "root";
+	public static final String USER = "notebook";
+	public static final String DATABASE = "notebook";
 	
 	private static DatabaseConnection instance;
 	
@@ -51,7 +52,7 @@ public class DatabaseConnection {
 	}
 	
 	private boolean createDatabaseIfNotExists() {
-		String query = "CREATE DATABASE IF NOT EXISTS ws_db_test;";
+		String query = "CREATE DATABASE IF NOT EXISTS " + DATABASE + ";";
 		DataSource dataSource = getDataSourceWithoutDatabase();
 		try (Connection con = dataSource.getConnection(); Statement statement = con.createStatement()) {
 			statement.execute(query);
@@ -87,7 +88,7 @@ public class DatabaseConnection {
 		MysqlDataSource dataSource = new MysqlDataSource();
 		dataSource.setURL(URL);
 		dataSource.setUser(USER);
-		dataSource.setPassword("4fgsdf32fewa321rfdserw32qf");//add the same password in the environment variables of the docker-compose.ylm
+		dataSource.setPassword("52hgfoklh43bvd04ohif");//add the same password in the environment variables of the docker-compose.ylm
 		dataSource.setPort(3306);//the default mysql port
 		try {
 			//enable public key retrieval because I want to get the keys of the inserted data 
