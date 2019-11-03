@@ -27,12 +27,12 @@ The classes (with fields) needed for the communication are the following:
     * headline: String
     * noteText: String
     * priority: int
-    * executionDates: List<DateTime>
-    * reminderDates: List<DateTime>
+    * executionDates: List&lt;LocalDateTime&gt;
+    * reminderDates: List&lt;LocalDateTime&gt;
 * **NoteSelector**
-    * ids: List<Integer>
+    * ids: List&lt;Integer&gt;
     * idRelation: Relation
-    * date: DateTime
+    * date: LocalDateTime
     * dateRelation: Relation
     * priority: int
     * priorityRelation: Relation
@@ -43,6 +43,8 @@ The classes (with fields) needed for the communication are the following:
     * GREATER
     * LESS
     * EQUALS
+    * GREATER_EQUALS
+    * LESS_EQUALS
   
 All communication classes need to satisfy the [java bean convention](https://en.wikipedia.org/wiki/JavaBeans).
 

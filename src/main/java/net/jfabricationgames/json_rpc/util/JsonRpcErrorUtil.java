@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response.Status;
 import net.jfabricationgames.json_rpc.JsonRpcError;
 import net.jfabricationgames.json_rpc.JsonRpcErrorCode;
 import net.jfabricationgames.json_rpc.JsonRpcErrorResponse;
-import net.jfabricationgames.ws_db_test.DatabaseService;
+import net.jfabricationgames.notebook.service.NoteBookService;
 
 /**
  * Creates errors that are often used
@@ -78,7 +78,7 @@ public abstract class JsonRpcErrorUtil {
 	private static JsonRpcErrorResponse createEmptyErrorResponse(String id) {
 		JsonRpcErrorResponse response = new JsonRpcErrorResponse();
 		response.setId(id);
-		response.setJsonRpc(DatabaseService.JSON_RPC);
+		response.setJsonRpc(NoteBookService.JSON_RPC);
 		return response;
 	}
 }
