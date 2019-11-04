@@ -3,6 +3,12 @@ package net.jfabricationgames.notebook.note;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Requirements for the selection of a note. Multiple requirements are connected using a logical AND.
+ * 
+ * @author Tobias Faßbender
+ *
+ */
 public class NoteSelector {
 	
 	private List<Integer> ids;
@@ -70,6 +76,20 @@ public class NoteSelector {
 	
 	public static NoteSelector empty() {
 		return new NoteSelectorBuilder().build();
+	}
+	
+	public boolean isValid() {
+		boolean valid = true;
+		
+		//every relation that is not NONE has values
+		valid &= (idRelation == Relation.NONE || (ids != null && !ids.isEmpty()));
+		valid &= (dateRelation == Relation.NONE || date != null);
+		//if there are multiple ids the relation has to be IN
+		valid &= (ids == null || ids.size() <= 1 || idRelation == Relation.IN);
+		//date relation and priority relation mussn't use IN
+		valid &= (dateRelation != Relation.IN && priorityRelation != Relation.IN);
+		
+		return valid;
 	}
 	
 	public List<Integer> getIds() {
