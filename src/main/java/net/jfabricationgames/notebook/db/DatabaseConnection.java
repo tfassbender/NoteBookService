@@ -50,6 +50,8 @@ public class DatabaseConnection {
 	
 	public static final String VERSION = "1.0.0";
 	
+	private static final boolean autoCommit = false;
+	
 	private static DatabaseConnection instance;
 	
 	private DatabaseConnection() {
@@ -73,9 +75,18 @@ public class DatabaseConnection {
 	private void createDatabaseIfNotExists() throws SQLException {
 		String query = "CREATE DATABASE IF NOT EXISTS " + DATABASE + ";";
 		DataSource dataSource = getDataSourceWithoutDatabase();
-		try (Connection con = dataSource.getConnection(); Statement statement = con.createStatement()) {
-			LOGGER.info("Creating database (if not exists); sending query: " + query);
-			statement.execute(query);
+		try (Connection connection = dataSource.getConnection()) {
+			try (Statement statement = connection.createStatement()) {
+				connection.setAutoCommit(autoCommit);
+				LOGGER.info("Creating database (if not exists); sending query: " + query);
+				statement.execute(query);
+				
+				connection.commit();
+			}
+			catch (SQLException sqle) {
+				connection.rollback();
+				throw sqle;
+			}
 		}
 	}
 	
@@ -99,15 +110,24 @@ public class DatabaseConnection {
 				+ "FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE "//
 				+ ");";
 		DataSource dataSource = getDataSource();
-		try (Connection con = dataSource.getConnection(); Statement statement = con.createStatement()) {
-			LOGGER.info("Creating table notes (if not exists); sending query: " + queryCreateTableNotes);
-			statement.execute(queryCreateTableNotes);
-			
-			LOGGER.info("Creating table execution dates (if not exists); sending query: " + queryCreateTableExecutionDates);
-			statement.execute(queryCreateTableExecutionDates);
-			
-			LOGGER.info("Creating table reminder dates (if not exists); sending query: " + queryCreateTableReminderDates);
-			statement.execute(queryCreateTableReminderDates);
+		try (Connection connection = dataSource.getConnection()) {
+			connection.setAutoCommit(autoCommit);
+			try (Statement statement = connection.createStatement()) {
+				LOGGER.info("Creating table notes (if not exists); sending query: " + queryCreateTableNotes);
+				statement.execute(queryCreateTableNotes);
+				
+				LOGGER.info("Creating table execution dates (if not exists); sending query: " + queryCreateTableExecutionDates);
+				statement.execute(queryCreateTableExecutionDates);
+				
+				LOGGER.info("Creating table reminder dates (if not exists); sending query: " + queryCreateTableReminderDates);
+				statement.execute(queryCreateTableReminderDates);
+				
+				connection.commit();
+			}
+			catch (SQLException sqle) {
+				connection.rollback();
+				throw sqle;
+			}
 		}
 	}
 	
@@ -150,32 +170,42 @@ public class DatabaseConnection {
 		int id = -1;
 		
 		DataSource dataSource = getDataSource();
-		try (Connection con = dataSource.getConnection()) {
-			//add the note content to the note table
-			try (PreparedStatement statement = con.prepareStatement(queryNote, Statement.RETURN_GENERATED_KEYS)) {
-				statement.setString(1, note.getHeadline());
-				statement.setString(2, note.getNoteText());
-				statement.setInt(3, note.getPriority());
-				
-				LOGGER.debug("Executing PreparedStatement: " + statement);
-				int affectedRows = statement.executeUpdate();
-				
-				if (affectedRows == 0) {
-					throw new SQLException("Inserting data to note table failed. No affected rows.");
-				}
-				
-				try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-					if (generatedKeys.next()) {
-						id = generatedKeys.getInt(1);
-					}
-					else {
-						throw new SQLException("Inserting data to note table failed. No ID obtained.");
-					}
-				}
-			}
+		try (Connection connection = dataSource.getConnection()) {
+			connection.setAutoCommit(autoCommit);
 			
-			//add the execution and reminder dates in the respective tables
-			insertExecutionAndReminderDates(con, note, id);
+			//add the note content to the note table
+			try {
+				try (PreparedStatement statement = connection.prepareStatement(queryNote, Statement.RETURN_GENERATED_KEYS)) {
+					statement.setString(1, note.getHeadline());
+					statement.setString(2, note.getNoteText());
+					statement.setInt(3, note.getPriority());
+					
+					LOGGER.debug("Executing PreparedStatement: " + statement);
+					int affectedRows = statement.executeUpdate();
+					
+					if (affectedRows == 0) {
+						throw new SQLException("Inserting data to note table failed. No affected rows.");
+					}
+					
+					try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+						if (generatedKeys.next()) {
+							id = generatedKeys.getInt(1);
+						}
+						else {
+							throw new SQLException("Inserting data to note table failed. No ID obtained.");
+						}
+					}
+				}
+				
+				//add the execution and reminder dates in the respective tables
+				insertExecutionAndReminderDates(connection, note, id);
+				
+				connection.commit();
+			}
+			catch (SQLException sqle) {
+				connection.rollback();
+				throw sqle;
+			}
 		}
 		
 		return id;
@@ -201,37 +231,46 @@ public class DatabaseConnection {
 		Map<Integer, Note> notes = new HashMap<Integer, Note>();
 		DataSource dataSource = getDataSource();
 		
-		try (Connection con = dataSource.getConnection();//
-				PreparedStatement statement = con.prepareStatement(query)) {
-			
-			addSelectorValues(statement, selector, 1);
-			LOGGER.debug("Executing PreparedStatement: " + statement);
-			
-			try (ResultSet rs = statement.executeQuery()) {
-				//read the rows of the result set
-				while (rs.next()) {
-					//get the fields from each row
-					int id = rs.getInt(1);
-					String headline = rs.getString(2);
-					String noteText = rs.getString(3);
-					int priority = rs.getInt(4);
-					LocalDateTime executionDate = rs.getObject(5, LocalDateTime.class);
-					LocalDateTime reminderDate = rs.getObject(6, LocalDateTime.class);
-					
-					//add the result data to the notes
-					Note note = notes.get(id);
-					if (note == null) {
-						note = new Note();
+		try (Connection connection = dataSource.getConnection()) {
+			connection.setAutoCommit(autoCommit);
+			try (PreparedStatement statement = connection.prepareStatement(query)) {
+				connection.setAutoCommit(autoCommit);
+				
+				addSelectorValues(statement, selector, 1);
+				LOGGER.debug("Executing PreparedStatement: " + statement);
+				
+				try (ResultSet rs = statement.executeQuery()) {
+					//read the rows of the result set
+					while (rs.next()) {
+						//get the fields from each row
+						int id = rs.getInt(1);
+						String headline = rs.getString(2);
+						String noteText = rs.getString(3);
+						int priority = rs.getInt(4);
+						LocalDateTime executionDate = rs.getObject(5, LocalDateTime.class);
+						LocalDateTime reminderDate = rs.getObject(6, LocalDateTime.class);
+						
+						//add the result data to the notes
+						Note note = notes.get(id);
+						if (note == null) {
+							note = new Note();
+						}
+						note.setId(id);
+						note.setHeadline(headline);
+						note.setNoteText(noteText);
+						note.setPriority(priority);
+						note.addExecutionDate(executionDate);
+						note.addReminderDate(reminderDate);
+						
+						notes.put(id, note);
 					}
-					note.setId(id);
-					note.setHeadline(headline);
-					note.setNoteText(noteText);
-					note.setPriority(priority);
-					note.addExecutionDate(executionDate);
-					note.addReminderDate(reminderDate);
-					
-					notes.put(id, note);
 				}
+				
+				connection.commit();
+			}
+			catch (SQLException sqle) {
+				connection.rollback();
+				throw sqle;
 			}
 		}
 		
@@ -253,27 +292,37 @@ public class DatabaseConnection {
 		int affectedRows = 0;
 		
 		DataSource dataSource = getDataSource();
-		try (Connection con = dataSource.getConnection()) {
-			//add the note content to the note table
-			try (PreparedStatement statement = con.prepareStatement(queryNote)) {
-				statement.setString(1, note.getHeadline());
-				statement.setString(2, note.getNoteText());
-				statement.setInt(3, note.getPriority());
-				statement.setInt(4, note.getId());
-				
-				LOGGER.debug("Executing PreparedStatement: " + statement);
-				affectedRows = statement.executeUpdate();
-				
-				if (affectedRows == 0) {
-					throw new SQLException("Updating data to note table failed. No affected rows.");
+		try (Connection connection = dataSource.getConnection()) {
+			connection.setAutoCommit(autoCommit);
+			
+			try {
+				//add the note content to the note table
+				try (PreparedStatement statement = connection.prepareStatement(queryNote)) {
+					statement.setString(1, note.getHeadline());
+					statement.setString(2, note.getNoteText());
+					statement.setInt(3, note.getPriority());
+					statement.setInt(4, note.getId());
+					
+					LOGGER.debug("Executing PreparedStatement: " + statement);
+					affectedRows = statement.executeUpdate();
+					
+					if (affectedRows == 0) {
+						throw new SQLException("Updating data to note table failed. No affected rows.");
+					}
 				}
+				
+				//remove all execution and reminder dates
+				deleteExecutionAndReminderDates(connection, note.getId());
+				
+				//(re-)insert the execution and reminder dates
+				insertExecutionAndReminderDates(connection, note, note.getId());
+				
+				connection.commit();
 			}
-			
-			//remove all execution and reminder dates
-			deleteExecutionAndReminderDates(con, note.getId());
-			
-			//(re-)insert the execution and reminder dates
-			insertExecutionAndReminderDates(con, note, note.getId());
+			catch (SQLException sqle) {
+				connection.rollback();
+				throw sqle;
+			}
 		}
 		
 		return affectedRows;
@@ -299,9 +348,11 @@ public class DatabaseConnection {
 		int affectedRows = 0;
 		
 		DataSource dataSource = getDataSource();
-		try (Connection con = dataSource.getConnection()) {
+		try (Connection connection = dataSource.getConnection()) {
+			connection.setAutoCommit(autoCommit);
+			
 			//add the note content to the note table
-			try (PreparedStatement statement = con.prepareStatement(deleteQuery)) {
+			try (PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
 				for (int id : matchingIds) {
 					statement.setInt(1, id);
 					LOGGER.debug("Executing PreparedStatement: " + statement);
@@ -311,6 +362,12 @@ public class DatabaseConnection {
 						throw new SQLException("Updating data to note table failed. No affected rows.");
 					}
 				}
+				
+				connection.commit();
+			}
+			catch (SQLException sqle) {
+				connection.rollback();
+				throw sqle;
 			}
 		}
 		
