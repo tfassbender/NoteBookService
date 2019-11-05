@@ -45,9 +45,10 @@ The classes (with fields) needed for the communication are the following:
     * EQUALS
     * GREATER_EQUALS
     * LESS_EQUALS
+    * IN
   
 All communication classes need to satisfy the [java bean convention](https://en.wikipedia.org/wiki/JavaBeans).
 
 # Links
 
-(will be added later...)
+For the compiled project that can be run using docker see: [NoteBookService_docker](https://github.com/tfassbender/NoteBookService_docker)
