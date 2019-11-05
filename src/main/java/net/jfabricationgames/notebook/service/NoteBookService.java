@@ -44,6 +44,32 @@ public class NoteBookService {
 		return Response.status(Status.OK).entity(rpcResponse).build();
 	}
 	
+	/**
+	 * Test whether the database is working (by creating a DatabaseConnection object that creates the database and tables)
+	 */
+	@GET
+	@Path("/test_db")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response testDatabase() {
+		LOGGER.info("Received 'testDatabase' request (HTTP GET)");
+		
+		String answer;
+		try {
+			DatabaseConnection.getInstance();
+			answer = "Database up and running";
+		}
+		catch (Exception e) {
+			answer = "Database error: " + e.getClass().getSimpleName() + ": " + e.getLocalizedMessage() + "\n"
+					+ JsonRpcErrorUtil.getStackTraceAsString(e);
+		}
+		
+		JsonRpcResponse rpcResponse = new JsonRpcResponse();
+		rpcResponse.setId("42");
+		rpcResponse.setJsonRpc(JSON_RPC);
+		rpcResponse.setResult(answer);
+		return Response.status(Status.OK).entity(rpcResponse).build();
+	}
+	
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)

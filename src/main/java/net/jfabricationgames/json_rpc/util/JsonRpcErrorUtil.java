@@ -1,5 +1,8 @@
 package net.jfabricationgames.json_rpc.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -80,5 +83,18 @@ public abstract class JsonRpcErrorUtil {
 		response.setId(id);
 		response.setJsonRpc(NoteBookService.JSON_RPC);
 		return response;
+	}
+	
+	/**
+	 * Get a StackTrace of a Throwable as a string
+	 * 
+	 * @param throwable
+	 * @return
+	 */
+	public static String getStackTraceAsString(Throwable throwable) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		throwable.printStackTrace(pw);
+		return sw.toString();
 	}
 }

@@ -3,3 +3,4 @@
 .project
 target/
 log/
+src/main/resources/passwords.properties
