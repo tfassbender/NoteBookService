@@ -10,15 +10,15 @@ class NoteSelectorTest {
 	
 	@Test
 	public void testIsValid() {
-		NoteSelector selector1 = new NoteSelectorBuilder().setDateRelation(Relation.AFTER).build();
-		NoteSelector selector2 = new NoteSelectorBuilder().setIdRelation(Relation.GREATER).build();
-		NoteSelector selector3 = new NoteSelectorBuilder().setDateRelation(Relation.IN).build();
-		NoteSelector selector4 = new NoteSelectorBuilder().addId(1).addId(2).setIdRelation(Relation.LESS).build();
+		NoteSelector selector1 = new NoteSelectorBuilder().setDateRelation(NoteRelation.AFTER).build();
+		NoteSelector selector2 = new NoteSelectorBuilder().setIdRelation(NoteRelation.GREATER).build();
+		NoteSelector selector3 = new NoteSelectorBuilder().setDateRelation(NoteRelation.IN).build();
+		NoteSelector selector4 = new NoteSelectorBuilder().addId(1).addId(2).setIdRelation(NoteRelation.LESS).build();
 		
-		NoteSelector valid1 = new NoteSelectorBuilder().setDate(LocalDateTime.now()).setDateRelation(Relation.BEFORE).build();
-		NoteSelector valid2 = new NoteSelectorBuilder().addId(1).addId(2).setIdRelation(Relation.IN).build();
-		NoteSelector valid3 = new NoteSelectorBuilder().addId(1).setIdRelation(Relation.EQUALS).setPriority(1)
-				.setPriorityRelation(Relation.GREATER_EQUALS).build();
+		NoteSelector valid1 = new NoteSelectorBuilder().setDate(LocalDateTime.now()).setDateRelation(NoteRelation.BEFORE).build();
+		NoteSelector valid2 = new NoteSelectorBuilder().addId(1).addId(2).setIdRelation(NoteRelation.IN).build();
+		NoteSelector valid3 = new NoteSelectorBuilder().addId(1).setIdRelation(NoteRelation.EQUALS).setPriority(1)
+				.setPriorityRelation(NoteRelation.GREATER_EQUALS).build();
 		
 		assertFalse(selector1.isValid());
 		assertFalse(selector2.isValid());

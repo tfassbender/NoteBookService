@@ -10,9 +10,9 @@ public class NoteSelectorBuilder {
 	
 	public NoteSelectorBuilder() {
 		selector = new NoteSelector();
-		selector.setIdRelation(Relation.NONE);
-		selector.setDateRelation(Relation.NONE);
-		selector.setPriorityRelation(Relation.NONE);
+		selector.setIdRelation(NoteRelation.NONE);
+		selector.setDateRelation(NoteRelation.NONE);
+		selector.setPriorityRelation(NoteRelation.NONE);
 	}
 	
 	public NoteSelectorBuilder setIds(List<Integer> ids) {
@@ -46,17 +46,17 @@ public class NoteSelectorBuilder {
 		return this;
 	}
 	
-	public NoteSelectorBuilder setIdRelation(Relation idRelation) {
+	public NoteSelectorBuilder setIdRelation(NoteRelation idRelation) {
 		selector.setIdRelation(idRelation);
 		return this;
 	}
 	
-	public NoteSelectorBuilder setDateRelation(Relation dateRelation) {
+	public NoteSelectorBuilder setDateRelation(NoteRelation dateRelation) {
 		selector.setDateRelation(dateRelation);
 		return this;
 	}
 	
-	public NoteSelectorBuilder setPriorityRelation(Relation priorityRelation) {
+	public NoteSelectorBuilder setPriorityRelation(NoteRelation priorityRelation) {
 		selector.setPriorityRelation(priorityRelation);
 		return this;
 	}

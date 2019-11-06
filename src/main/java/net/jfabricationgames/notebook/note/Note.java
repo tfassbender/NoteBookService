@@ -31,6 +31,40 @@ public class Note {
 		this.reminderDates = reminderDates;
 	}
 	
+	public static int compareExecutionDates(Note note1, Note note2) {
+		LocalDateTime date1 = null;
+		LocalDateTime date2 = null;
+		if (note1.getExecutionDates() != null && !note1.getExecutionDates().isEmpty()) {
+			date1 = note1.getExecutionDates().get(0);
+		}
+		if (note2.getExecutionDates() != null && !note2.getExecutionDates().isEmpty()) {
+			date2 = note2.getExecutionDates().get(0);
+		}
+		if (date1 != null && date2 != null) {
+			return compareLocalDateTimes(date1, date2);
+		}
+		else if (date1 != null && date2 == null) {
+			return -1;
+		}
+		else if (date1 == null && date2 != null) {
+			return 1;
+		}
+		else {
+			return 0;
+		}
+	}
+	public static int compareLocalDateTimes(LocalDateTime date1, LocalDateTime date2) {
+		if (date1.equals(date2)) {
+			return 0;
+		}
+		else if (date1.isBefore(date2)) {
+			return -1;
+		}
+		else {
+			return 1;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return "Note [id=" + id + ", headline=" + headline + ", noteText=" + noteText + ", priority=" + priority + ", executionDates="

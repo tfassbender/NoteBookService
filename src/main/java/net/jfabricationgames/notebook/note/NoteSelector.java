@@ -2,6 +2,8 @@ package net.jfabricationgames.notebook.note;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Requirements for the selection of a note. Multiple requirements are connected using a logical AND.
@@ -15,9 +17,9 @@ public class NoteSelector {
 	private LocalDateTime date;
 	private int priority;
 	
-	private Relation idRelation;
-	private Relation dateRelation;
-	private Relation priorityRelation;
+	private NoteRelation idRelation;
+	private NoteRelation dateRelation;
+	private NoteRelation priorityRelation;
 	
 	public NoteSelector() {
 		//default constructor for java bean convention
@@ -82,14 +84,101 @@ public class NoteSelector {
 		boolean valid = true;
 		
 		//every relation that is not NONE has values
-		valid &= (idRelation == Relation.NONE || (ids != null && !ids.isEmpty()));
-		valid &= (dateRelation == Relation.NONE || date != null);
+		valid &= (idRelation == NoteRelation.NONE || (ids != null && !ids.isEmpty()));
+		valid &= (dateRelation == NoteRelation.NONE || date != null);
 		//if there are multiple ids the relation has to be IN
-		valid &= (ids == null || ids.size() <= 1 || idRelation == Relation.IN);
+		valid &= (ids == null || ids.size() <= 1 || idRelation == NoteRelation.IN);
 		//date relation and priority relation mussn't use IN
-		valid &= (dateRelation != Relation.IN && priorityRelation != Relation.IN);
+		valid &= (dateRelation != NoteRelation.IN && priorityRelation != NoteRelation.IN);
+		//id relation and priority relation mussn't use BEFORE or AFTER
+		valid &= (idRelation != NoteRelation.BEFORE && idRelation != NoteRelation.AFTER);
+		valid &= (priorityRelation != NoteRelation.BEFORE && priorityRelation != NoteRelation.AFTER);
 		
 		return valid;
+	}
+	
+	public List<Note> getMatching(List<Note> notes) {
+		if (!isValid()) {
+			throw new IllegalStateException("This NoteSelector is not valid and can't be used to match notes.");
+		}
+		Stream<Note> noteStream = notes.stream();
+		
+		//match id relation
+		if (idRelation != NoteRelation.NONE) {
+			switch (idRelation) {
+				case EQUALS:
+					noteStream = noteStream.filter(note -> note.getId() == ids.get(0));
+					break;
+				case GREATER:
+					noteStream = noteStream.filter(note -> note.getId() > ids.get(0));
+					break;
+				case GREATER_EQUALS:
+					noteStream = noteStream.filter(note -> note.getId() >= ids.get(0));
+					break;
+				case IN:
+					noteStream = noteStream.filter(note -> ids.contains(note.getId()));
+					break;
+				case LESS:
+					noteStream = noteStream.filter(note -> note.getId() < ids.get(0));
+					break;
+				case LESS_EQUALS:
+					noteStream = noteStream.filter(note -> note.getId() <= ids.get(0));
+					break;
+				default:
+					throw new IllegalStateException("Unexpected id relation. This NoteSelector seems to be not valid.");
+			}
+		}
+		//match date relation
+		if (dateRelation != NoteRelation.NONE) {
+			switch (dateRelation) {
+				case AFTER:
+				case GREATER:
+					noteStream = noteStream.filter(note -> note.getExecutionDates().get(0).isAfter(date));
+					break;
+				case BEFORE:
+				case LESS:
+					noteStream = noteStream.filter(note -> note.getExecutionDates().get(0).isBefore(date));
+					break;
+				case EQUALS:
+					noteStream = noteStream.filter(note -> note.getExecutionDates().get(0).equals(date));
+					break;
+				case GREATER_EQUALS:
+					noteStream = noteStream
+							.filter(note -> note.getExecutionDates().get(0).isAfter(date) || note.getExecutionDates().get(0).equals(date));
+					break;
+				case LESS_EQUALS:
+					noteStream = noteStream
+							.filter(note -> note.getExecutionDates().get(0).isBefore(date) || note.getExecutionDates().get(0).equals(date));
+					break;
+				default:
+					throw new IllegalStateException("Unexpected date relation. This NoteSelector seems to be not valid.");
+			}
+		}
+		//match priority relation
+		if (priorityRelation != NoteRelation.NONE) {
+			switch (priorityRelation) {
+				case EQUALS:
+					noteStream = noteStream.filter(note -> note.getPriority() == priority);
+					break;
+				case GREATER:
+					noteStream = noteStream.filter(note -> note.getPriority() > priority);
+					break;
+				case GREATER_EQUALS:
+					noteStream = noteStream.filter(note -> note.getPriority() >= priority);
+					break;
+				case LESS:
+					noteStream = noteStream.filter(note -> note.getPriority() < priority);
+					break;
+				case LESS_EQUALS:
+					noteStream = noteStream.filter(note -> note.getPriority() <= priority);
+					break;
+				default:
+					throw new IllegalStateException("Unexpected priority relation. This NoteSelector seems to be not valid.");
+			}
+		}
+		
+		List<Note> matching = noteStream.collect(Collectors.toList());
+		return matching;
 	}
 	
 	public List<Integer> getIds() {
@@ -113,24 +202,24 @@ public class NoteSelector {
 		this.priority = priority;
 	}
 	
-	public Relation getIdRelation() {
+	public NoteRelation getIdRelation() {
 		return idRelation;
 	}
-	public void setIdRelation(Relation idRelation) {
+	public void setIdRelation(NoteRelation idRelation) {
 		this.idRelation = idRelation;
 	}
 	
-	public Relation getDateRelation() {
+	public NoteRelation getDateRelation() {
 		return dateRelation;
 	}
-	public void setDateRelation(Relation dateRelation) {
+	public void setDateRelation(NoteRelation dateRelation) {
 		this.dateRelation = dateRelation;
 	}
 	
-	public Relation getPriorityRelation() {
+	public NoteRelation getPriorityRelation() {
 		return priorityRelation;
 	}
-	public void setPriorityRelation(Relation priorityRelation) {
+	public void setPriorityRelation(NoteRelation priorityRelation) {
 		this.priorityRelation = priorityRelation;
 	}
 }

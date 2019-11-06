@@ -9,21 +9,21 @@ import org.junit.jupiter.api.Test;
 
 import net.jfabricationgames.notebook.note.NoteSelector;
 import net.jfabricationgames.notebook.note.NoteSelectorBuilder;
-import net.jfabricationgames.notebook.note.Relation;
+import net.jfabricationgames.notebook.note.NoteRelation;
 
 class DatabaseConnectionTest {
 	
 	@Test
 	public void testCreateSelectorQuery() throws SQLException {
-		NoteSelector selector1 = new NoteSelectorBuilder().addId(1).addId(2).setIdRelation(Relation.IN).build();
+		NoteSelector selector1 = new NoteSelectorBuilder().addId(1).addId(2).setIdRelation(NoteRelation.IN).build();
 		String expectedWhereClause1 = "WHERE n.id IN (?)";
 		
-		NoteSelector selector2 = new NoteSelectorBuilder().addId(1).setIdRelation(Relation.GREATER).setPriority(5)
-				.setPriorityRelation(Relation.LESS_EQUALS).build();
+		NoteSelector selector2 = new NoteSelectorBuilder().addId(1).setIdRelation(NoteRelation.GREATER).setPriority(5)
+				.setPriorityRelation(NoteRelation.LESS_EQUALS).build();
 		String expectedWhereClause2 = "WHERE n.id > ? AND n.priority <= ?";
 		
-		NoteSelector selector3 = new NoteSelectorBuilder().setPriority(5).setPriorityRelation(Relation.EQUALS).setDate(LocalDateTime.now())
-				.setDateRelation(Relation.BEFORE).build();
+		NoteSelector selector3 = new NoteSelectorBuilder().setPriority(5).setPriorityRelation(NoteRelation.EQUALS).setDate(LocalDateTime.now())
+				.setDateRelation(NoteRelation.BEFORE).build();
 		String expectedWhereClause3 = "WHERE n.priority = ? AND ex.execution_date < ?";
 		
 		NoteSelector selector4 = new NoteSelectorBuilder().build();

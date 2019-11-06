@@ -1,6 +1,6 @@
 package net.jfabricationgames.notebook.note;
 
-public enum Relation {
+public enum NoteRelation {
 	
 	NONE(""),//
 	BEFORE("<"),//
@@ -14,7 +14,7 @@ public enum Relation {
 	
 	private final String sign;
 	
-	private Relation(String sign) {
+	private NoteRelation(String sign) {
 		this.sign = sign;
 	}
 	

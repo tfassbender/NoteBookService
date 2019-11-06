@@ -24,7 +24,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 
 import net.jfabricationgames.notebook.note.Note;
 import net.jfabricationgames.notebook.note.NoteSelector;
-import net.jfabricationgames.notebook.note.Relation;
+import net.jfabricationgames.notebook.note.NoteRelation;
 
 /**
  * Create a connection to a database and add or get values of one specific table for testing.
@@ -431,28 +431,28 @@ public class DatabaseConnection {
 		}
 		
 		sb.append("WHERE ");
-		if (selector.getIdRelation() == Relation.NONE && selector.getPriorityRelation() == Relation.NONE
-				&& selector.getDateRelation() == Relation.NONE) {
+		if (selector.getIdRelation() == NoteRelation.NONE && selector.getPriorityRelation() == NoteRelation.NONE
+				&& selector.getDateRelation() == NoteRelation.NONE) {
 			sb.append("1");//no further selection
 		}
 		else {
-			if (selector.getIdRelation() != Relation.NONE) {
-				if (selector.getIdRelation() == Relation.IN) {
-					sb.append("n.id ").append(Relation.IN.getSign()).append(" (?)");
+			if (selector.getIdRelation() != NoteRelation.NONE) {
+				if (selector.getIdRelation() == NoteRelation.IN) {
+					sb.append("n.id ").append(NoteRelation.IN.getSign()).append(" (?)");
 				}
 				else {
 					sb.append("n.id ").append(selector.getIdRelation().getSign()).append(" ?");
 				}
 				added = true;
 			}
-			if (selector.getPriorityRelation() != Relation.NONE) {
+			if (selector.getPriorityRelation() != NoteRelation.NONE) {
 				if (added) {
 					sb.append(" AND ");
 				}
 				sb.append("n.priority ").append(selector.getPriorityRelation().getSign()).append(" ?");
 				added = true;
 			}
-			if (selector.getDateRelation() != Relation.NONE) {
+			if (selector.getDateRelation() != NoteRelation.NONE) {
 				if (added) {
 					sb.append(" AND ");
 				}
@@ -473,7 +473,7 @@ public class DatabaseConnection {
 		}
 		
 		int added = 0;
-		if (selector.getIdRelation() != Relation.NONE) {
+		if (selector.getIdRelation() != NoteRelation.NONE) {
 			if (selector.getIds().size() == 1) {
 				statement.setInt(firstIndex + added, selector.getIds().get(0));
 				added++;
@@ -484,11 +484,11 @@ public class DatabaseConnection {
 				statement.setString(firstIndex + added, allIdsAsCsv);
 			}
 		}
-		if (selector.getPriorityRelation() != Relation.NONE) {
+		if (selector.getPriorityRelation() != NoteRelation.NONE) {
 			statement.setInt(firstIndex + added, selector.getPriority());
 			added++;
 		}
-		if (selector.getDateRelation() != Relation.NONE) {
+		if (selector.getDateRelation() != NoteRelation.NONE) {
 			statement.setObject(firstIndex + added, selector.getDate());
 			added++;
 		}
