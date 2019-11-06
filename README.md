@@ -7,7 +7,9 @@ Notes can be added, received, updated and removed using the REST interface with 
 
 # Build
 
-The web-archive file can be build using maven: `mvn clean install compile`
+* Add the MySQL password to the file `src/main/resources/passwords_examples.properties` and rename this file to `passwords.properties` (the file `passwords.properties` is ignored by git for obvious reasons) 
+* The web-archive file can be build using maven: `mvn clean install compile`
+* Place the created .war file in the Tomcat or Tomcat-Docker and start Tomcat 
 
 # Methods
 
