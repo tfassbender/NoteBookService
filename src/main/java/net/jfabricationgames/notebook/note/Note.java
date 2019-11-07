@@ -3,6 +3,7 @@ package net.jfabricationgames.notebook.note;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Note {
 	
@@ -63,6 +64,56 @@ public class Note {
 		else {
 			return 1;
 		}
+	}
+	
+	public static Note parseToNote(Object obj) throws IllegalArgumentException {
+		if (obj == null) {
+			return null;
+		}
+		else if (obj instanceof Note) {
+			return (Note) obj;
+		}
+		else if (obj instanceof Map) {
+			//assume the params Object is a Map, because it's deserialized this way
+			@SuppressWarnings("unchecked")
+			Map<String, Object> parameterMap = (Map<String, Object>) obj;
+			
+			//check whether the required fields are included
+			if (!parameterMap.containsKey("id") || !parameterMap.containsKey("headline") || !parameterMap.containsKey("noteText")
+					|| !parameterMap.containsKey("priority")) {
+				throw new IllegalArgumentException("The required fields were not found in the parameters");
+			}
+			
+			try {
+				Note note = new Note();
+				note.setId(Integer.parseInt((String) parameterMap.get("id")));
+				note.setHeadline((String) parameterMap.get("headline"));
+				note.setNoteText((String) parameterMap.get("noteText"));
+				note.setPriority(Integer.parseInt((String) parameterMap.get("priority")));
+				Object executionDates = parameterMap.get("executionDates");
+				Object reminderDates = parameterMap.get("reminderDates");
+				
+				note.setExecutionDates(parseDates(executionDates));
+				note.setReminderDates(parseDates(reminderDates));
+				
+				return note;
+			}
+			catch (NumberFormatException nfe) {
+				throw new IllegalArgumentException("A parameter could not be parsed as int");
+			}
+			catch (Exception e) {
+				throw new IllegalArgumentException("Couldn't get all needed parameters from the object");
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Object couldn't be parsed as note");
+		}
+	}
+	
+	private static List<LocalDateTime> parseDates(Object dates) {
+		@SuppressWarnings("unchecked")
+		List<LocalDateTime> parsedDates = (List<LocalDateTime>) dates;
+		return parsedDates;
 	}
 	
 	@Override
