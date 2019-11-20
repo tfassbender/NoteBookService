@@ -13,7 +13,7 @@ import net.jfabricationgames.notebook.note.NoteSelector;
 
 public class NoteBookServiceProvider {
 	
-	private static final Logger LOGGER = LogManager.getLogger(DatabaseConnection.class);
+	private static final Logger LOGGER = LogManager.getLogger(NoteBookServiceProvider.class);
 	
 	/**
 	 * Receives a note and creates it in the database.

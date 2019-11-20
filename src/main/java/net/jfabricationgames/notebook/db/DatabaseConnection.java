@@ -139,13 +139,13 @@ public class DatabaseConnection {
 				+ "id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, "//
 				+ "note_id INT NOT NULL, "//
 				+ "execution_date DATETIME, "//
-				+ "FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE "//
+				+ "FOREIGN KEY (note_id) REFERENCES " + DATABASE + "." + TABLE_NOTES + "(id) ON DELETE CASCADE "//
 				+ ");";
 		String queryCreateTableReminderDates = "CREATE TABLE IF NOT EXISTS " + DATABASE + "." + TABLE_REMINDER_DATES + " ("//
 				+ "id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, "//
 				+ "note_id INT NOT NULL, "//
 				+ "reminder_date DATETIME, "//
-				+ "FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE "//
+				+ "FOREIGN KEY (note_id) REFERENCES " + DATABASE + "." + TABLE_NOTES + "(id) ON DELETE CASCADE "//
 				+ ");";
 		DataSource dataSource = getDataSource();
 		try (Connection connection = dataSource.getConnection()) {
