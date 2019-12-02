@@ -5,6 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import net.jfabricationgames.json_rpc.UnsupportedParameterException;
+import net.jfabricationgames.json_rpc.util.JsonRpcParserUtil;
+
 /**
  * Requirements for the selection of a note. Multiple requirements are connected using a logical AND.
  * 
@@ -21,8 +29,25 @@ public class NoteSelector {
 	private NoteRelation dateRelation;
 	private NoteRelation priorityRelation;
 	
+	private transient static final Logger LOGGER = LogManager.getLogger(NoteSelector.class);
+	
 	public NoteSelector() {
 		//default constructor for java bean convention
+	}
+	
+	/**
+	 * Create a NoteSelector from a JSON-RPC parameter object
+	 * 
+	 * @param parameter
+	 *        The parameter object from a JSON-RPC message
+	 * 
+	 * @throws UnsupportedParameterException
+	 *         An UnsopportedParameterException is thrown if the NoteSelector can't be built from the parameter object.
+	 */
+	public static NoteSelector fromJsonRpcParameters(Object parameters) throws UnsupportedParameterException {
+		LOGGER.debug("Deserializing JSON-RPC parameter object to NoteSelector (parameters: " + parameters + ")");
+		NoteSelector noteSelector = JsonRpcParserUtil.parseToType(parameters, NoteSelector.class);
+		return noteSelector;
 	}
 	
 	@Override
@@ -80,6 +105,7 @@ public class NoteSelector {
 		return new NoteSelectorBuilder().build();
 	}
 	
+	@JsonIgnore
 	public boolean isValid() {
 		boolean valid = true;
 		

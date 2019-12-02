@@ -1,10 +1,16 @@
 package net.jfabricationgames.notebook.note;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+
+import net.jfabricationgames.json_rpc.UnsupportedParameterException;
+import net.jfabricationgames.json_rpc.util.JsonRpcParserUtil;
 
 class NoteSelectorTest {
 	
@@ -28,5 +34,40 @@ class NoteSelectorTest {
 		assertTrue(valid1.isValid());
 		assertTrue(valid2.isValid());
 		assertTrue(valid3.isValid());
+	}
+	
+	@Test
+	public void testFromJsonRpcParameters_withoutDates() throws UnsupportedParameterException {
+		NoteSelector noteSelector = new NoteSelectorBuilder().addIds(Arrays.asList(1, 2, 3)).setIdRelation(NoteRelation.IN).setPriority(42)
+				.setPriorityRelation(NoteRelation.LESS_EQUALS).build();
+		try {
+			Object noteObject = JsonRpcParserUtil.parseToType(noteSelector, Object.class);
+			
+			NoteSelector recreatedNoteSelector = NoteSelector.fromJsonRpcParameters(noteObject);
+			
+			assertEquals(noteSelector, recreatedNoteSelector);
+		}
+		catch (UnsupportedParameterException upe) {
+			upe.printStackTrace();
+			throw upe;
+		}
+	}
+	
+	@Test
+	public void testFromJsonRpcParameters_withDates() throws UnsupportedParameterException {
+		NoteSelector noteSelector = new NoteSelectorBuilder().addIds(Arrays.asList(1, 2, 3)).setIdRelation(NoteRelation.IN)
+				.setDate(LocalDateTime.now()).setDateRelation(NoteRelation.AFTER).setPriority(42).setPriorityRelation(NoteRelation.LESS_EQUALS)
+				.build();
+		try {
+			Object noteObject = JsonRpcParserUtil.parseToType(noteSelector, Object.class);
+			
+			NoteSelector recreatedNoteSelector = NoteSelector.fromJsonRpcParameters(noteObject);
+			
+			assertEquals(noteSelector, recreatedNoteSelector);
+		}
+		catch (UnsupportedParameterException upe) {
+			upe.printStackTrace();
+			throw upe;
+		}
 	}
 }

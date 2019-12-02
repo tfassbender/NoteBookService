@@ -30,7 +30,8 @@ public class NoteBookServiceProvider {
 			return id;
 		}
 		else {
-			throw new UnsupportedParameterException("A Note object is expected for this method (create_note)");
+			throw new UnsupportedParameterException(
+					"A Note object is expected for this method (create_note), but object type was " + parameters.getClass().getName());
 		}
 	}
 	
@@ -49,7 +50,8 @@ public class NoteBookServiceProvider {
 			return id;
 		}
 		else {
-			throw new UnsupportedParameterException("A NoteSelector object is expected for this method (get_notes)");
+			throw new UnsupportedParameterException(
+					"A NoteSelector object is expected for this method (get_notes), but object type was " + parameters.getClass().getName());
 		}
 	}
 	
@@ -68,7 +70,8 @@ public class NoteBookServiceProvider {
 			return id;
 		}
 		else {
-			throw new UnsupportedParameterException("A Note object is expected for this method (update_note)");
+			throw new UnsupportedParameterException(
+					"A Note object is expected for this method (update_note), but object type was " + parameters.getClass().getName());
 		}
 	}
 	
@@ -87,7 +90,8 @@ public class NoteBookServiceProvider {
 			return id;
 		}
 		else {
-			throw new UnsupportedParameterException("A NoteSelector object is expected for this method (delete_notes)");
+			throw new UnsupportedParameterException(
+					"A NoteSelector object is expected for this method (delete_notes), but object type was " + parameters.getClass().getName());
 		}
 	}
 }
