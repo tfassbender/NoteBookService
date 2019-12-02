@@ -262,8 +262,8 @@ public class DatabaseConnection {
 		String selectionQuery = createSelectorQuery(selector);
 		String query = "SELECT n.id, n.headline, n.note_text, n.priority, ex.execution_date, re.reminder_date "//
 				+ "FROM " + DATABASE + "." + TABLE_NOTES + " n "//
-				+ "JOIN " + TABLE_EXECUTION_DATES + " ex ON n.id = ex.note_id "//
-				+ "JOIN " + TABLE_REMINDER_DATES + " re ON n.id = re.note_id "//
+				+ "JOIN " + DATABASE + "." + TABLE_EXECUTION_DATES + " ex ON n.id = ex.note_id "//
+				+ "JOIN " + DATABASE + "." + TABLE_REMINDER_DATES + " re ON n.id = re.note_id "//
 				+ selectionQuery + ";";//selectionQuery contains the WHERE clause
 		
 		Map<Integer, Note> notes = new HashMap<Integer, Note>();
@@ -506,8 +506,10 @@ public class DatabaseConnection {
 	 * @throws SQLException
 	 */
 	private void insertExecutionAndReminderDates(Connection con, Note note, int id) throws SQLException {
-		String queryExecutionDates = "INSERT INTO " + TABLE_EXECUTION_DATES + " (`id`, `note_id`, `execution_date`) VALUES (\"0\", ?, ?);";
-		String queryReminderDates = "INSERT INTO " + TABLE_REMINDER_DATES + " (`id`, `note_id`, `reminder_date`) VALUES (\"0\", ?, ?);";
+		String queryExecutionDates = "INSERT INTO " + DATABASE + "." + TABLE_EXECUTION_DATES
+				+ " (`id`, `note_id`, `execution_date`) VALUES (\"0\", ?, ?);";
+		String queryReminderDates = "INSERT INTO " + DATABASE + "." + TABLE_REMINDER_DATES
+				+ " (`id`, `note_id`, `reminder_date`) VALUES (\"0\", ?, ?);";
 		
 		//add the note execution dates to the execution dates table
 		if (note.getExecutionDates() != null && !note.getExecutionDates().isEmpty()) {
@@ -554,8 +556,8 @@ public class DatabaseConnection {
 	 * @throws SQLException
 	 */
 	private void deleteExecutionAndReminderDates(Connection con, int id) throws SQLException {
-		String queryRemoveExecutionDates = "DELETE FROM " + TABLE_EXECUTION_DATES + " WHERE note_id = ?;";
-		String queryRemoveReminderDates = "DELETE FROM " + TABLE_REMINDER_DATES + " WHERE note_id = ?;";
+		String queryRemoveExecutionDates = "DELETE FROM " + DATABASE + "." + TABLE_EXECUTION_DATES + " WHERE note_id = ?;";
+		String queryRemoveReminderDates = "DELETE FROM " + DATABASE + "." + TABLE_REMINDER_DATES + " WHERE note_id = ?;";
 		
 		try (PreparedStatement statement = con.prepareStatement(queryRemoveExecutionDates)) {
 			statement.setInt(1, id);

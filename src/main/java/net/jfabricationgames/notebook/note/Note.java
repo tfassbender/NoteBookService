@@ -39,6 +39,18 @@ public class Note {
 		Note note = JsonRpcParserUtil.parseToType(parameters, Note.class);
 		return note;
 	}
+	/**
+	 * Same as fromJsonRpcParameter but returns null when an exception occurs instead of throwing the exception.
+	 */
+	public static Note fromJsonRpcParametersSave(Object parameters) {
+		try {
+			return fromJsonRpcParameters(parameters);
+		}
+		catch (UnsupportedParameterException e) {
+			LOGGER.error("error while parsing Note from parameters", e);
+			return null;
+		}
+	}
 	
 	public Note(String headline, String noteText, int priority) {
 		this.headline = headline;

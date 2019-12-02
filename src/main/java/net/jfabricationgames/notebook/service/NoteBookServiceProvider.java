@@ -23,16 +23,10 @@ public class NoteBookServiceProvider {
 	 */
 	public Integer create_note(Object parameters) throws SQLException, UnsupportedParameterException {
 		LOGGER.info("create_note was called (parameters: " + parameters + ")");
-		if (parameters instanceof Note) {
-			Note note = (Note) parameters;
-			DatabaseConnection db = DatabaseConnection.getInstance();
-			int id = db.createNote(note);
-			return id;
-		}
-		else {
-			throw new UnsupportedParameterException(
-					"A Note object is expected for this method (create_note), but object type was " + parameters.getClass().getName());
-		}
+		Note note = Note.fromJsonRpcParameters(parameters);
+		DatabaseConnection db = DatabaseConnection.getInstance();
+		int id = db.createNote(note);
+		return id;
 	}
 	
 	/**
@@ -43,16 +37,10 @@ public class NoteBookServiceProvider {
 	 */
 	public List<Note> get_notes(Object parameters) throws SQLException, UnsupportedParameterException {
 		LOGGER.info("get_notes was called (parameters: " + parameters + ")");
-		if (parameters instanceof NoteSelector) {
-			NoteSelector selector = (NoteSelector) parameters;
-			DatabaseConnection db = DatabaseConnection.getInstance();
-			List<Note> id = db.getNotes(selector);
-			return id;
-		}
-		else {
-			throw new UnsupportedParameterException(
-					"A NoteSelector object is expected for this method (get_notes), but object type was " + parameters.getClass().getName());
-		}
+		NoteSelector selector = NoteSelector.fromJsonRpcParameters(parameters);
+		DatabaseConnection db = DatabaseConnection.getInstance();
+		List<Note> id = db.getNotes(selector);
+		return id;
 	}
 	
 	/**
@@ -63,16 +51,10 @@ public class NoteBookServiceProvider {
 	 */
 	public Integer update_note(Object parameters) throws SQLException, UnsupportedParameterException {
 		LOGGER.info("update_note was called (parameters: " + parameters + ")");
-		if (parameters instanceof Note) {
-			Note note = (Note) parameters;
-			DatabaseConnection db = DatabaseConnection.getInstance();
-			int id = db.updateNote(note);
-			return id;
-		}
-		else {
-			throw new UnsupportedParameterException(
-					"A Note object is expected for this method (update_note), but object type was " + parameters.getClass().getName());
-		}
+		Note note = Note.fromJsonRpcParameters(parameters);
+		DatabaseConnection db = DatabaseConnection.getInstance();
+		int id = db.updateNote(note);
+		return id;
 	}
 	
 	/**
@@ -83,15 +65,9 @@ public class NoteBookServiceProvider {
 	 */
 	public Integer delete_notes(Object parameters) throws SQLException, UnsupportedParameterException {
 		LOGGER.info("delete_notes was called (parameters: " + parameters + ")");
-		if (parameters instanceof NoteSelector) {
-			NoteSelector selector = (NoteSelector) parameters;
-			DatabaseConnection db = DatabaseConnection.getInstance();
-			int id = db.deleteNotes(selector);
-			return id;
-		}
-		else {
-			throw new UnsupportedParameterException(
-					"A NoteSelector object is expected for this method (delete_notes), but object type was " + parameters.getClass().getName());
-		}
+		NoteSelector selector = NoteSelector.fromJsonRpcParameters(parameters);
+		DatabaseConnection db = DatabaseConnection.getInstance();
+		int id = db.deleteNotes(selector);
+		return id;
 	}
 }
