@@ -108,7 +108,8 @@ public class NoteBookService {
 			ObjectWriter ow = new ObjectMapper().registerModule(new JavaTimeModule()).writer();
 			String rpcResponseJson;
 			try {
-				rpcResponseJson = ow.writeValueAsString(request);
+				rpcResponseJson = ow.writeValueAsString(rpcResponse);
+				LOGGER.debug("Build rpcResponseJson: {}", rpcResponseJson);
 				
 				//build the response with the manual parsed JSON (for java 8 dates) and send it back to the client
 				Response response = Response.status(Status.OK).entity(rpcResponseJson).build();
