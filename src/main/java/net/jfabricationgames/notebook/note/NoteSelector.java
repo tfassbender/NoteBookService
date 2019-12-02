@@ -33,6 +33,9 @@ public class NoteSelector {
 	
 	public NoteSelector() {
 		//default constructor for java bean convention
+		idRelation = NoteRelation.NONE;
+		dateRelation = NoteRelation.NONE;
+		priorityRelation = NoteRelation.NONE;
 	}
 	
 	/**

@@ -15,6 +15,11 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import net.jfabricationgames.json_rpc.JsonRpcRequest;
 import net.jfabricationgames.json_rpc.JsonRpcResponse;
 import net.jfabricationgames.json_rpc.UnsupportedParameterException;
@@ -99,9 +104,23 @@ public class NoteBookService {
 			rpcResponse.setJsonRpc(JSON_RPC);
 			rpcResponse.setResult(obj);
 			
-			//build the response and send it back to the client
-			Response response = Response.status(Status.OK).entity(rpcResponse).build();
-			return response;
+			//parse the response here to make sure jsr310 is used for correct serializing of the java 8 dates
+			ObjectWriter ow = new ObjectMapper().registerModule(new JavaTimeModule()).writer();
+			String rpcResponseJson;
+			try {
+				rpcResponseJson = ow.writeValueAsString(request);
+				
+				//build the response with the manual parsed JSON (for java 8 dates) and send it back to the client
+				Response response = Response.status(Status.OK).entity(rpcResponseJson).build();
+				return response;
+			}
+			catch (JsonProcessingException e) {
+				LOGGER.error("Json representation failed", e);
+				
+				//build the response without manual parsing and send it back to the client
+				Response response = Response.status(Status.OK).entity(rpcResponse).build();
+				return response;
+			}
 		}
 		catch (NoSuchMethodException | SecurityException e) {
 			LOGGER.error("Error: ", e);

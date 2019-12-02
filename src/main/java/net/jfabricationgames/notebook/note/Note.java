@@ -23,6 +23,8 @@ public class Note {
 	
 	public Note() {
 		//default constructor for java bean convention
+		executionDates = new ArrayList<LocalDateTime>();
+		reminderDates = new ArrayList<LocalDateTime>();
 	}
 	
 	/**
