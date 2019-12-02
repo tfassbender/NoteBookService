@@ -26,7 +26,7 @@ public class NoteBookService {
 	
 	public static final String JSON_RPC = "2.0";
 	
-	private static final Logger LOGGER = LogManager.getLogger(DatabaseConnection.class);
+	private static final Logger LOGGER = LogManager.getLogger(NoteBookService.class);
 	
 	/**
 	 * A simple hello world to test whether the service is reachable
@@ -104,11 +104,11 @@ public class NoteBookService {
 			return response;
 		}
 		catch (NoSuchMethodException | SecurityException e) {
-			LOGGER.error(e);
+			LOGGER.error("Error: ", e);
 			return JsonRpcErrorUtil.createMethodNotFoundErrorResponse(request.getId(), request.getMethod());
 		}
 		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			LOGGER.error(e);
+			LOGGER.error("Error: ", e);
 			if (e.getCause() instanceof UnsupportedParameterException) {
 				return JsonRpcErrorUtil.createIllegalParameterErrorResponse(request.getId(), request.getParams());
 			}
