@@ -7,7 +7,9 @@ Notes can be added, received, updated and removed using the REST interface with 
 
 # Build
 
-The web-archive file can be build using maven: `mvn clean install compile`
+* Add the MySQL password to the file `src/main/resources/passwords_examples.properties` and rename this file to `passwords.properties` (the file `passwords.properties` is ignored by git for obvious reasons) 
+* The web-archive file can be build using maven: `mvn clean install compile`
+* Place the created .war file in the Tomcat or Tomcat-Docker and start Tomcat 
 
 # Methods
 
@@ -27,12 +29,12 @@ The classes (with fields) needed for the communication are the following:
     * headline: String
     * noteText: String
     * priority: int
-    * executionDates: List<DateTime>
-    * reminderDates: List<DateTime>
+    * executionDates: List&lt;LocalDateTime&gt;
+    * reminderDates: List&lt;LocalDateTime&gt;
 * **NoteSelector**
-    * ids: List<Integer>
+    * ids: List&lt;Integer&gt;
     * idRelation: Relation
-    * date: DateTime
+    * date: LocalDateTime
     * dateRelation: Relation
     * priority: int
     * priorityRelation: Relation
@@ -43,9 +45,12 @@ The classes (with fields) needed for the communication are the following:
     * GREATER
     * LESS
     * EQUALS
+    * GREATER_EQUALS
+    * LESS_EQUALS
+    * IN
   
 All communication classes need to satisfy the [java bean convention](https://en.wikipedia.org/wiki/JavaBeans).
 
 # Links
 
-(will be added later...)
+For the compiled project that can be run using docker see: [NoteBookService_docker](https://github.com/tfassbender/NoteBookService_docker)

@@ -1,12 +1,15 @@
 package net.jfabricationgames.json_rpc.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import net.jfabricationgames.json_rpc.JsonRpcError;
 import net.jfabricationgames.json_rpc.JsonRpcErrorCode;
 import net.jfabricationgames.json_rpc.JsonRpcErrorResponse;
-import net.jfabricationgames.ws_db_test.DatabaseService;
+import net.jfabricationgames.notebook.service.NoteBookService;
 
 /**
  * Creates errors that are often used
@@ -78,7 +81,20 @@ public abstract class JsonRpcErrorUtil {
 	private static JsonRpcErrorResponse createEmptyErrorResponse(String id) {
 		JsonRpcErrorResponse response = new JsonRpcErrorResponse();
 		response.setId(id);
-		response.setJsonRpc(DatabaseService.JSON_RPC);
+		response.setJsonRpc(NoteBookService.JSON_RPC);
 		return response;
+	}
+	
+	/**
+	 * Get a StackTrace of a Throwable as a string
+	 * 
+	 * @param throwable
+	 * @return
+	 */
+	public static String getStackTraceAsString(Throwable throwable) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		throwable.printStackTrace(pw);
+		return sw.toString();
 	}
 }
