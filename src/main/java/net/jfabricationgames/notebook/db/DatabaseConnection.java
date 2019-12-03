@@ -262,8 +262,8 @@ public class DatabaseConnection {
 		String selectionQuery = createSelectorQuery(selector);
 		String query = "SELECT n.id, n.headline, n.note_text, n.priority, ex.execution_date, re.reminder_date "//
 				+ "FROM " + DATABASE + "." + TABLE_NOTES + " n "//
-				+ "JOIN " + DATABASE + "." + TABLE_EXECUTION_DATES + " ex ON n.id = ex.note_id "//
-				+ "JOIN " + DATABASE + "." + TABLE_REMINDER_DATES + " re ON n.id = re.note_id "//
+				+ "LEFT OUTER JOIN " + DATABASE + "." + TABLE_EXECUTION_DATES + " ex ON n.id = ex.note_id "//
+				+ "LEFT OUTER JOIN " + DATABASE + "." + TABLE_REMINDER_DATES + " re ON n.id = re.note_id "//
 				+ selectionQuery + ";";//selectionQuery contains the WHERE clause
 		
 		Map<Integer, Note> notes = new HashMap<Integer, Note>();
