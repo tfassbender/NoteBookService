@@ -22,6 +22,7 @@
 		<mockito.version>1.9.5</mockito.version>
 		<log4j.version>2.11.0</log4j.version>
 		<jackson-jsr310.version>2.9.7</jackson-jsr310.version>
+		<javax-servlet-api.version>2.5</javax-servlet-api.version>
 	</properties>
 
 	<dependencies>
@@ -103,6 +104,14 @@
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 			<version>${jackson-jsr310.version}</version>
+		</dependency>
+
+		<!-- Servlet api - so eclipse shuts up about not finding a superclass in 
+			the index.jsp -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${javax-servlet-api.version}</version>
 		</dependency>
 	</dependencies>
 
